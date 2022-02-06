@@ -9,80 +9,43 @@ import SwiftUI
 import CoreData
 
 struct ContentView: View {
-    @Environment(\.managedObjectContext) private var viewContext
-
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
-        animation: .default)
-    private var items: FetchedResults<Item>
-
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-                    } label: {
-                        Text(item.timestamp!, formatter: itemFormatter)
-                    }
-                }
-                .onDelete(perform: deleteItems)
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
-            }
-            Text("Select an item")
+        
+        VStack(spacing: 30){
+            
+            Text("폰트와 굵기 설정")
+                .font(.title)
+                .fontWeight(.black)
+            
+            Text("글씨색은 foreground, 배경은 background")
+                .foregroundColor(Color.white)
+                .padding()
+                .background(Color.blue)
+            
+            Text("커스텀 폰트, 볼드체, 이텔리체, 밑줄, 취소선")
+                .font(.custom("Menlo", size: 16))
+                .bold()
+                .italic()
+                .underline()
+                .strikethrough()
+                
+                
+            Text("라인 수 제한과 \n 텍스트 정렬 기능입니다. \n 이건 안보입니다")
+                .lineLimit(2)
+                .multilineTextAlignment(.trailing)
+                .fixedSize()
+            
+            (Text("자간과 기준선").kerning(8)) //자간
+            + Text("조정도 쉽게 가능합니다.").baselineOffset(20) //기준선
+                .font(.system(size: 16))
         }
+        
     }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            offsets.map { items[$0] }.forEach(viewContext.delete)
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
-    }
-}
-
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
-
+    
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+        ContentView()
+.previewInterfaceOrientation(.landscapeLeft)
     }
+}
 }
